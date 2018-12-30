@@ -9,6 +9,7 @@ values
 
 instance variables
 -- TODO Define instance variables here
+	private id: nat1;
 	private username: String;
 	private email: String;
 	private password: String;
@@ -25,6 +26,10 @@ operations
 		return self
 	)
 	post len username > 0 and len email > 0 and len password > 6;
+	/* public User: nat1 ==> User
+	User(i) == (
+		id := i;
+	); */
 
 	-- Get user's name
 	public getUsername: () ==> String

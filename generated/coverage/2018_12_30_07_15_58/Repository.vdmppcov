@@ -1,8 +1,7 @@
-class Branch
+class Repository
 
 types
 -- TODO Define types here
-	public String = Utilities`String;
 
 values
 -- TODO Define values here
@@ -19,4 +18,4 @@ functions
 traces
 -- TODO Define Combinatorial Test Traces here
 
-end Branch
+end Repository

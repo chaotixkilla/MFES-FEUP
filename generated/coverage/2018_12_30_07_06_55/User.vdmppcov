@@ -23,8 +23,8 @@ operations
 		email := mail;
 		password := pass;
 		return self
-	)
-	post len username > 0 and len email > 0 and len password > 6;
+	);
+	-- post len username > 0 and len email > 0 and len password > 6;
 
 	-- Get user's name
 	public getUsername: () ==> String
