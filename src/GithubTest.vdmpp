@@ -1,0 +1,22 @@
+class GithubTest
+types
+-- TODO Define types here
+values
+-- TODO Define values here
+instance variables
+  g : Github := new Github();
+operations
+  private assertTrue: bool ==> ()
+  assertTrue(cond) == return
+  pre cond;
+  
+  public static main: () ==> ()
+  main() ==
+  (
+    new GithubTest().doTests();
+  );
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end GithubTest
