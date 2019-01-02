@@ -32,7 +32,7 @@ operations
 		return username;
 	);
 	
-	public pure getEmail: () ==> String
+	public getEmail: () ==> String
 	getEmail() == (
 		return email;
 	);

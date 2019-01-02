@@ -1,0 +1,54 @@
+class Github
+
+types
+-- TODO Define types here
+	public String = Utilities`String;
+
+values
+-- TODO Define values here
+
+instance variables
+-- TODO Define instance variables here
+	private users: set of User := {};
+	private repositories: set of Repository := {};
+
+operations
+-- TODO Define operations here
+
+	-- GitHub Constructor
+	public Github: () ==> Github
+	Github() == (
+		return self;
+	)
+	post users = {} and repositories = {};
+	
+	-- Get all currently existant usernames
+	public pure getAllUsernames: () ==> set of String
+	getAllUsernames() == (
+		dcl usernames: set of String := {};
+		for all u in set users do
+			usernames := usernames union {u.getUsername()};
+		return usernames;
+	);
+	
+	-- Create a new user
+	public addUser: User ==> ()
+	addUser(user) == (
+		users := users union {user}
+	)
+	pre {user.getUsername()} inter getAllUsernames() = {} and {user} inter users = {} -- utilizador nao existe
+	post {user.getUsername()} inter getAllUsernames() = {}; -- utilizador nao tem nome igual a utilizador ja existente
+	
+	-- User login
+	/*public login: String * String ==> bool
+	login(username, password) == (
+		
+	);*/
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end Github

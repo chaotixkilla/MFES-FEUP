@@ -21,6 +21,53 @@ operations
 		return self;
 	)
 	post users = {} and repositories = {};
+	
+	-- Get specific user, given the username
+	public getUser: String ==> User
+	getUser(username) == (
+		for all u in set users do (
+			if username = u.getUsername()
+				then return u;
+		);
+		return new User();
+	);
+	
+	-- Get all currently existant usernames
+	public pure getAllUsernames: () ==> set of String
+	getAllUsernames() == (
+		dcl usernames: set of String := {};
+		for all u in set users do
+			usernames := usernames union {u.getUsername()};
+		return usernames;
+	);
+	
+	-- Get all currently existant emails
+	public pure getAllEmails: () ==> set of String
+	getAllEmails() == (
+		dcl emails: set of String := {};
+		for all u in set users do
+			emails := emails union {u.getEmail()};
+		return emails;
+	);
+	
+	-- Create a new user
+	public addUser: User ==> ()
+	addUser(user) == (
+		users := users union {user}
+	)
+	pre {user.getUsername()} inter getAllUsernames() = {} -- nome do utilizador nao esta a ser utilizado
+		and {user.getEmail()} inter getAllEmails() = {} -- email do utilizador nao esta a ser utilizado
+		and {user} inter users = {} -- utilizador nao esta no sistema
+	post {user.getUsername()} inter getAllUsernames() = {user.getUsername()} -- nome do utilizador nao esta a ser utilizado
+		and {user.getEmail()} inter getAllEmails() = {user.getEmail()}; -- email do utilizador nao esta a ser utilizado
+	
+	-- User login
+	public login: String * String ==> bool
+	login(username, password) == (
+		return getUser(username).getPassword() = password;
+	)
+	pre {username} inter getAllUsernames() <> {} -- o user existe no sistema
+		and len username > 0 and len password > 0; -- o input existe
 
 functions
 -- TODO Define functiones here
