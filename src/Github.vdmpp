@@ -9,13 +9,18 @@ values
 
 instance variables
 -- TODO Define instance variables here
-	public users: set of User := {};
-	
-	-- No two users should have same username ( not working :( )
-	-- inv not exists user1, user2 in set users & user1 <> user2 and user1.getUsername() = user2.getUsername();
+	private users: set of User := {};
+	private repositories: set of Repository := {};
 
 operations
 -- TODO Define operations here
+
+	-- GitHub Constructor
+	public Github: () ==> Github
+	Github() == (
+		return self;
+	)
+	post users = {} and repositories = {};
 
 functions
 -- TODO Define functiones here

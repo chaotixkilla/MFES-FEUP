@@ -3,15 +3,53 @@ class Repository
 types
 -- TODO Define types here
 	public String = Utilities`String;
+	public RepositoryVisibility = Utilities`RepositoryVisibility;
 
 values
 -- TODO Define values here
 
 instance variables
 -- TODO Define instance variables here
+	private owner: User;
+	private name: String;
+	private collaborators: set of User := {};
+	private visibility: RepositoryVisibility := <Public>;
 
 operations
 -- TODO Define operations here
+
+	-- Repository constructor
+	public Repository: User * String ==> Repository
+	Repository(user, repName) == (
+		owner := user;
+		name := repName;
+		return self;
+	)
+	post collaborators = {} and visibility = <Public>;
+	
+	-- Get repository owner
+	public getOwner: () ==> User
+	getOwner() == (
+		return owner;
+	);
+	
+	-- Get repository name
+	public getName: () ==> String
+	getName() == (
+		return name;
+	);
+	
+	-- Get repository collaborators
+	public getCollaborators: () ==> set of User
+	getCollaborators() == (
+		return collaborators;
+	);
+	
+	-- Get repository visibility
+	public isPublicRepository: () ==> bool
+	isPublicRepository() == (
+		return visibility = <Public>;
+	);
 
 functions
 -- TODO Define functiones here

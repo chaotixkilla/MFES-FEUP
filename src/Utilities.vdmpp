@@ -2,6 +2,7 @@ class Utilities
 types
 -- TODO Define types here
 	public String = seq1 of char;
+	public RepositoryVisibility = <Public> | <Private>;
 	
 values
 -- TODO Define values here
