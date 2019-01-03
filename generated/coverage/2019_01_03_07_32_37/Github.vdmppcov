@@ -61,17 +61,6 @@ operations
 	)
 	pre {user} inter users = {user}; -- utilizador esta no sistema;
 	
-	public pure getUserSpecificRepository: User * String ==> Repository
-	getUserSpecificRepository(user, repName) == (
-		dcl rep: Repository;
-		for all r in set repositories do
-			if r.getOwner() = user and r.getName() = repName
-				then rep := r;
-		return rep;
-	)
-	pre {user} inter users = {user} -- utilizador esta no sistema;
-		and {repName} inter getAllUserRepositoriesName(user) = {repName}; -- repositorio esta no sistema;
-	
 	-- Create a new user
 	public addUser: User ==> ()
 	addUser(user) == (
@@ -80,8 +69,8 @@ operations
 	pre {user.getUsername()} inter getAllUsernames() = {} -- nome do utilizador nao esta a ser utilizado
 		and {user.getEmail()} inter getAllEmails() = {} -- email do utilizador nao esta a ser utilizado
 		and {user} inter users = {} -- utilizador nao esta no sistema
-	post {user.getUsername()} inter getAllUsernames() = {user.getUsername()}
-		and {user.getEmail()} inter getAllEmails() = {user.getEmail()}
+	post {user.getUsername()} inter getAllUsernames() = {user.getUsername()} -- nome do utilizador nao esta a ser utilizado
+		and {user.getEmail()} inter getAllEmails() = {user.getEmail()} -- email do utilizador nao esta a ser utilizado
 		and {user} inter users = {user}; -- utilizador esta no sistema
 	
 	-- User login
@@ -93,8 +82,8 @@ operations
 		and len username > 0 and len password > 0; -- o input existe
 		
 	-- Add repository
-	public createRepository: User * String ==> ()
-	createRepository(user, repName) == (
+	public addRepository: User * String ==> ()
+	addRepository(user, repName) == (
 		dcl newRepo: Repository := new Repository(user, repName);
 		repositories := repositories union {newRepo};
 	)
@@ -102,18 +91,7 @@ operations
 		and user in set users -- user criador existe no sistema
 		and len repName > 0 -- input existe
 	post {repName} inter getAllUserRepositoriesName(user) = {repName}; -- repositorio esta no sistema
-	
-	-- Add collaborator to a owner repository
-	public addCollaborator: User * String * User ==> ()
-	addCollaborator(owner, repName, newCollab) == (
-		dcl repo: Repository := getUserSpecificRepository(owner, repName);
-		repo.addCollaborator(owner, newCollab);
-	)
-	pre {owner, newCollab} inter users = {owner, newCollab} -- quer o owner, quer o novo colaborador estao no sistema
-		and {repName} inter getAllUserRepositoriesName(owner) = {repName} -- o repositorio existe
-		and getUserSpecificRepository(owner, repName).getCollaborators() inter {newCollab} = {} -- o utilizador a ser introduzido ainda nao e coloborador
-	post getUserSpecificRepository(owner, repName).getCollaborators() inter {newCollab} = {newCollab};
-	
+
 functions
 -- TODO Define functiones here
 

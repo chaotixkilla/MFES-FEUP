@@ -93,8 +93,8 @@ operations
 		and len username > 0 and len password > 0; -- o input existe
 		
 	-- Add repository
-	public createRepository: User * String ==> ()
-	createRepository(user, repName) == (
+	public addRepository: User * String ==> ()
+	addRepository(user, repName) == (
 		dcl newRepo: Repository := new Repository(user, repName);
 		repositories := repositories union {newRepo};
 	)

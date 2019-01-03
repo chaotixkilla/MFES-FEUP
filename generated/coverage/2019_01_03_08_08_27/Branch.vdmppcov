@@ -1,0 +1,40 @@
+class Branch
+
+types
+-- TODO Define types here
+	public String = Utilities`String;
+
+values
+-- TODO Define values here
+
+instance variables
+-- TODO Define instance variables here
+	private name: String;
+	private repository: Repository;
+
+operations
+-- TODO Define operations here
+	public Branch: Repository * String ==> Branch
+	Branch(repo, branchName) == (
+		name := branchName;
+		repository := repo;
+		return self;
+	);
+	
+	public getRepository: () ==> Repository
+	getRepository() == (
+		return repository;
+	);
+	
+	public getName: () ==> String
+	getName() == (
+		return name;
+	);
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end Branch

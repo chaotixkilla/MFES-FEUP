@@ -42,15 +42,9 @@ operations
 	);
 	
 	-- Get repository collaborators
-	public pure getCollaborators: () ==> set of User
+	public getCollaborators: () ==> set of User
 	getCollaborators() == (
 		return collaborators;
-	);
-	
-	-- Get repository branches
-	public getBranches: () ==> set of Branch
-	getBranches() == (
-		return branches;
 	);
 	
 	-- Get repository visibility
