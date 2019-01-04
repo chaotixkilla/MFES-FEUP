@@ -28,7 +28,7 @@ operations
 	/****************************************/
 	
 	-- Get specific user, given the username
-	public pure getUser: String ==> User
+	public getUser: String ==> User
 	getUser(username) == (
 		for all u in set users do (
 			if username = u.getUsername()
@@ -141,28 +141,12 @@ operations
 	pre {username} inter getAllUsernames() <> {} -- o user existe no sistema
 		and len username > 0 and len password > 0; -- o input existe
 		
-	-- User logout
 	public logout: () ==> ()
 	logout() == (
 		loggedInUsername := "undef";
 	)
 	pre {loggedInUsername} inter getAllUsernames() = {loggedInUsername}
 	post loggedInUsername = "undef";
-	
-	-- Delete user and all owned repositories
-	public deleteUser: String ==> ()
-	deleteUser(username) == (
-		if username = loggedInUsername
-			then logout();
-			
-		for all r in set repositories do
-			if r.getOwner() = getUser(username)
-				then repositories := repositories \ {r};
-				
-		users := users \ {getUser(username)};
-	)
-	pre {getUser(username)} inter users = {getUser(username)}
-	post {username} inter getAllUsernames() = {};
 		
 	/****************************************/
 	/************	REPOSITORY ****************/

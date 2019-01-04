@@ -149,16 +149,8 @@ operations
 	pre {loggedInUsername} inter getAllUsernames() = {loggedInUsername}
 	post loggedInUsername = "undef";
 	
-	-- Delete user and all owned repositories
 	public deleteUser: String ==> ()
 	deleteUser(username) == (
-		if username = loggedInUsername
-			then logout();
-			
-		for all r in set repositories do
-			if r.getOwner() = getUser(username)
-				then repositories := repositories \ {r};
-				
 		users := users \ {getUser(username)};
 	)
 	pre {getUser(username)} inter users = {getUser(username)}

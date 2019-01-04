@@ -11,7 +11,7 @@ instance variables
 -- TODO Define instance variables here
 	private users: set of User := {};
 	private repositories: set of Repository := {};
-	private loggedInUsername: String := "undef";
+	private loggedInUser: User := undefined;
 
 operations
 -- TODO Define operations here
@@ -28,7 +28,7 @@ operations
 	/****************************************/
 	
 	-- Get specific user, given the username
-	public pure getUser: String ==> User
+	public getUser: String ==> User
 	getUser(username) == (
 		for all u in set users do (
 			if username = u.getUsername()
@@ -133,7 +133,7 @@ operations
 	login(username, password) == (
 		if getUser(username).getPassword() = password
 			then (
-				loggedInUsername := username;
+				loggedInUser := getUser(username);
 				return true
 			);
 		return false;
@@ -141,28 +141,13 @@ operations
 	pre {username} inter getAllUsernames() <> {} -- o user existe no sistema
 		and len username > 0 and len password > 0; -- o input existe
 		
-	-- User logout
-	public logout: () ==> ()
+	public logout: () ==> bool
 	logout() == (
-		loggedInUsername := "undef";
+		loggedInUser := undefined;
+		return true;
 	)
-	pre {loggedInUsername} inter getAllUsernames() = {loggedInUsername}
-	post loggedInUsername = "undef";
-	
-	-- Delete user and all owned repositories
-	public deleteUser: String ==> ()
-	deleteUser(username) == (
-		if username = loggedInUsername
-			then logout();
-			
-		for all r in set repositories do
-			if r.getOwner() = getUser(username)
-				then repositories := repositories \ {r};
-				
-		users := users \ {getUser(username)};
-	)
-	pre {getUser(username)} inter users = {getUser(username)}
-	post {username} inter getAllUsernames() = {};
+	pre loggedInUser <> undefined
+	post loggedInUser = undefined;
 		
 	/****************************************/
 	/************	REPOSITORY ****************/

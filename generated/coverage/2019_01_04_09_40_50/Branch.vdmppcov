@@ -41,8 +41,8 @@ operations
 	addCommit(user, commit) == (
 		commits := commits ^ [commit];
 	)
-	pre (user in set repository.getCollaborators() or user = repository.getOwner())
-		and {commit.getIdentifier()} inter repository.getAllCommitsID() = {}; -- o ID do commit e unico no respectivo repositorio
+	pre user in set repository.getCollaborators() or user = repository.getOwner()
+		and {commit.getIdentifier()} union repository.getAllCommitsID() = {};
 
 functions
 -- TODO Define functiones here

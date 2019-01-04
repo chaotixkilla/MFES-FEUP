@@ -64,15 +64,6 @@ operations
 	)
 	pre branchName in set getBranchesNames();
 	
-	public pure getAllCommitsID: () ==> set of String
-	getAllCommitsID() == (
-		dcl IDs: set of String := {};
-		for all b in set branches do
-			for all c in set (elems b.getCommits()) do
-				IDs := IDs union {c.getIdentifier()};
-		return IDs;
-	);
-	
 	-- Get repository visibility
 	public isPublicRepository: () ==> bool
 	isPublicRepository() == (
