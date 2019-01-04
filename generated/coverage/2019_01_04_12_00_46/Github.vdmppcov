@@ -94,7 +94,7 @@ operations
 		return rep;
 	)
 	pre {user} inter users = {user} -- utilizador esta no sistema;
-		and {repName} inter getAllOwnedRepositoriesName(user) = {repName}; -- o user e o dono do repositorio;
+		and {repName} inter getAllOwnedRepositoriesName(user) = {repName}; -- repositorio esta no sistema;
 		
 	-- Get all current repositories available for a specific user
 	public pure getAllAvailableRepositoriesName: User ==> set of String

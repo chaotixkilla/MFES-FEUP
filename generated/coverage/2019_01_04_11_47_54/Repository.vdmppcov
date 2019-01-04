@@ -93,13 +93,6 @@ operations
 	)
 	pre owner = user and {newCollab} inter collaborators = {};
 	
-	public removeCollaborator: User * User ==> ()
-	removeCollaborator(user, oldCollab) == (
-		collaborators := collaborators \ {oldCollab}
-	)
-	pre owner = user and {oldCollab} inter collaborators = {oldCollab}
-	post {oldCollab} inter collaborators = {};
-	
 	public pure getBranchesNames: () ==> set of String
 	getBranchesNames() == (
 		dcl names: set of String := {};

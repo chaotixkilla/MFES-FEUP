@@ -94,7 +94,7 @@ operations
 		return rep;
 	)
 	pre {user} inter users = {user} -- utilizador esta no sistema;
-		and {repName} inter getAllOwnedRepositoriesName(user) = {repName}; -- o user e o dono do repositorio;
+		and {repName} inter getAllOwnedRepositoriesName(user) = {repName}; -- repositorio esta no sistema;
 		
 	-- Get all current repositories available for a specific user
 	public pure getAllAvailableRepositoriesName: User ==> set of String
@@ -208,7 +208,7 @@ operations
 		and user = getSpecificOwnedRepository(user, repName).getOwner() -- o utilizador é o owner deste repositorio
 	post {repName} inter getAllOwnedRepositoriesName(user) = {}; -- o repositorio nao existe
 	
-	-- Add collaborator to an owned repository
+	-- Add collaborator to a owned repository
 	public addCollaborator: User * String * User ==> ()
 	addCollaborator(owner, repName, newCollab) == (
 		dcl repo: Repository := getSpecificOwnedRepository(owner, repName);
@@ -216,19 +216,8 @@ operations
 	)
 	pre {owner, newCollab} inter users = {owner, newCollab} -- quer o owner, quer o novo colaborador estao no sistema
 		and {repName} inter getAllOwnedRepositoriesName(owner) = {repName} -- o repositorio existe
-		and getSpecificOwnedRepository(owner, repName).getCollaborators() inter {newCollab} = {} -- o utilizador a ser introduzido ainda nao e colaborador
+		and getSpecificOwnedRepository(owner, repName).getCollaborators() inter {newCollab} = {} -- o utilizador a ser introduzido ainda nao e coloborador
 	post getSpecificOwnedRepository(owner, repName).getCollaborators() inter {newCollab} = {newCollab};
-	
-	-- Remove collaborator from an owned repository
-	public removeCollaborator: User * String * User ==> ()
-	removeCollaborator(owner, repName, oldCollab) == (
-		dcl repo: Repository := getSpecificOwnedRepository(owner, repName);
-		repo.removeCollaborator(owner, oldCollab);
-	)
-	pre {owner, oldCollab} inter users = {owner, oldCollab} -- quer o owner, quer o antigo colaborador estao no sistema
-		and {repName} inter getAllOwnedRepositoriesName(owner) = {repName} -- o repositorio existe
-		and getSpecificOwnedRepository(owner, repName).getCollaborators() inter {oldCollab} = {oldCollab} -- o utilizador a ser removido era colaborador
-	post getSpecificOwnedRepository(owner, repName).getCollaborators() inter {oldCollab} = {}; -- o antigo colaborador nao existe
 	
 	/****************************************/
 	/**********	BRANCH AND COMMIT ***********/
@@ -254,6 +243,8 @@ operations
 	)
 	pre {committer} inter users = {committer} -- criador do commit existe no sistema
 		and {getSpecificAvailableRepository(committer, repName)} inter getUserAvailableRepositories(committer) = {getSpecificAvailableRepository(committer, repName)}; -- o repositorio onde esta a ser criado o commit esta disponivel para o criador
+	
+	
 	
 functions
 -- TODO Define functiones here
