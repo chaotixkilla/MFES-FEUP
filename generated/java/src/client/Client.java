@@ -31,4 +31,18 @@ public class Client {
 		
 		System.out.println(this.github.toString());
 	}
+	
+	//Menu printing
+	private void printGithubLogo() {
+		System.out.println("||||||||||||||||||||||||||");
+		System.out.println("||                      ||");
+		System.out.println("||        GITHUB        ||");
+		System.out.println("||                      ||");
+		System.out.println("||||||||||||||||||||||||||");
+	}
+	
+	private void printMainMenu() {
+		this.printGithubLogo();
+		System.out.println("Choose an option: ");
+	}
 }
