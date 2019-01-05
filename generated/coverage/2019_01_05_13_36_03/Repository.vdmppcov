@@ -142,19 +142,6 @@ operations
 	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes
 		and {branch} inter getBranches() = {branch} -- o branch existe
 	post {branch} inter getBranches() = {};
-	
-	public mergeBranches: User * Branch * Branch ==> ()
-	mergeBranches(user, branchToMergeTo, branchMerged) == (
-		deleteBranch(user, branchMerged);
-		for all c in set (elems branchMerged.getCommits()) do
-			(
-				branchToMergeTo.addCommit(user, c);
-				c.setBranch(branchToMergeTo);
-			)
-	)
-	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes;
-		and {branchToMergeTo, branchMerged} inter getBranches() = {branchToMergeTo, branchMerged} -- os branches existe
-	post {branchToMergeTo, branchMerged} inter getBranches() = {branchToMergeTo}; -- o branch merged ja nao existe
 
 functions
 -- TODO Define functiones here

@@ -295,17 +295,6 @@ operations
 	pre {user} inter users = {user} -- user existe no sistema
 		and {getSpecificAvailableRepository(user, repName)} inter getUserAvailableRepositories(user) = {getSpecificAvailableRepository(user, repName)}; -- o repositorio esta disponivel para o user
 	
-	-- Merge two existant branches
-	public mergeBranches: User * String * String * String ==> ()
-	mergeBranches(user, repName, branchToMergeTo, branchMerged) == (
-		dcl rep: Repository := getSpecificAvailableRepository(user, repName);
-		dcl branch1: Branch := rep.getSpecificBranch(branchToMergeTo);
-		dcl branch2: Branch := rep.getSpecificBranch(branchMerged);
-		rep.mergeBranches(user, branch1, branch2);
-	)
-	pre {user} inter users = {user} -- user existe no sistema
-		and {getSpecificAvailableRepository(user, repName)} inter getUserAvailableRepositories(user) = {getSpecificAvailableRepository(user, repName)}; -- o repositorio esta disponivel para o user
-	
 functions
 -- TODO Define functiones here
 

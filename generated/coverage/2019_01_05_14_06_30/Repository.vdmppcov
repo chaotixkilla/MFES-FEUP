@@ -147,10 +147,8 @@ operations
 	mergeBranches(user, branchToMergeTo, branchMerged) == (
 		deleteBranch(user, branchMerged);
 		for all c in set (elems branchMerged.getCommits()) do
-			(
-				branchToMergeTo.addCommit(user, c);
-				c.setBranch(branchToMergeTo);
-			)
+			branchToMergeTo.addCommit(user, c);
+			c.setBranch(branchToMergeTo);
 	)
 	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes;
 		and {branchToMergeTo, branchMerged} inter getBranches() = {branchToMergeTo, branchMerged} -- os branches existe

@@ -44,12 +44,6 @@ operations
 	getMessage() == (
 		return message;
 	);
-	
-	-- Useful for merges
-	public setBranch: Branch ==> ()
-	setBranch(newBranch) == (
-		branch := newBranch;
-	);
 
 functions
 -- TODO Define functiones here
