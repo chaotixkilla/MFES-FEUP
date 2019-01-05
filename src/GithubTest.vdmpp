@@ -55,17 +55,32 @@ operations
   	g.addCollaborator(u1, "repName", u2);
   	assertTrue({u2} = rep.getCollaborators());
   	
-  	--test
+  	--test many get"repositories"
   	assertTrue({"repName"}  = g.getAllAvailableRepositoriesName(u2));
   	assertTrue({rep} = g.getUserAvailableRepositories(u2));
   	assertTrue({"master"} = rep.getBranchesNames());
   	assertTrue(rep.isPublicRepository());
   	
-  	--test repository visibility
+  	--test toggleVisibility
   	rep.toggleVisibility(u1);
   	assertTrue(not rep.isPublicRepository());
   	rep.toggleVisibility(u1);
   	assertTrue(rep.isPublicRepository());
+  	
+  	--test makeRepositoryPublic, makeRepositoryPrivate & getVisibility
+  	rep.makeRepositoryPrivate(u1);
+  	assertTrue(<Private> = rep.getVisibility());
+  	rep.makeRepositoryPublic(u1);
+  	assertTrue(<Public> = rep.getVisibility());
+  	
+  	--test makeRepositoryPublic & makeRepositoryPrivate
+  	g.makeRepositoryPrivate(u1, "repName");
+  	assertTrue(<Private> = rep.getVisibility());
+  	g.makeRepositoryPublic(u1, "repName");
+  	assertTrue(<Public> = rep.getVisibility());
+  	
+  	--test getClonableRepositories
+  	assertTrue({rep} = g.getClonableRepositories(u1));
   	
   	--test createBranch
   	g.createBranch(u2, "repName", "branchName");
@@ -74,6 +89,12 @@ operations
   	b := rep.getSpecificBranch("branchName");
   	assertTrue(rep = b.getRepository());
   	assertTrue([] = b.getCommits());
+  	
+  	--test deleteBranch
+  	g.createBranch(u2, "repName", "deleteBranchTest");
+  	assertTrue("deleteBranchTest" in set rep.getBranchesNames());
+  	g.deleteBranch(u2, "repName", "deleteBranchTest");
+  	assertTrue("deleteBranchTest" not in set rep.getBranchesNames());
   	
   	--test createCommit
   	g.createCommit(u2, "repName", "branchName", "1commitID", "commitMessage1");
@@ -84,6 +105,14 @@ operations
   	assertTrue("commitMessage1" = c.getMessage());
   	g.createCommit(u1, "repName", "branchName", "2commitID", "commitMessage2");
   	assertTrue(2 = len b.getCommits());
+  	
+  	--test mergeBranches
+  	g.createBranch(u1, "repName", "newBranchName");
+  	assertTrue("newBranchName" in set rep.getBranchesNames());
+  	g.createCommit(u1, "repName", "newBranchName", "3commitID", "commitMessage3");
+  	g.mergeBranches(u1, "repName", "branchName", "newBranchName");
+  	assertTrue("newBranchName" not in set rep.getBranchesNames());
+  	assertTrue(3 = len b.getCommits());
   	
   	--test removeCollaborator
   	g.removeCollaborator(u1, "repName", u2);
