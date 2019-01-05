@@ -1,0 +1,144 @@
+class GithubTest
+types
+-- TODO Define types here
+values
+-- TODO Define values here
+instance variables
+  g : Github := new Github();
+  u : Utilities := new Utilities();
+  u1 : User := new User("user1", "mail1", "password1");
+  u2 : User := new User("user2", "mail2", "password2");
+  rep : Repository;
+  b: Branch;
+  c: Commit;
+operations
+  private assertTrue: bool ==> ()
+  assertTrue(cond) == return
+  pre cond;
+	
+  private doTests: () ==> ()
+  doTests() ==
+  (
+  	--test addUser
+  	assertTrue({} = g.getUsers());
+  	g.addUser(u1);
+  	assertTrue("user1" in set g.getAllUsernames());
+  	g.addUser(u2);
+  	assertTrue("user2" in set g.getAllUsernames());
+  	assertTrue("password1" = u1.getPassword());
+  	assertTrue("password2" = u2.getPassword());
+  	
+  	--test getUser
+  	assertTrue(u1 = g.getUser("user1"));
+  	
+  	--test getUsers
+  	assertTrue({u1, u2} = g.getUsers());
+  	
+  	--test getLoggedInUsername
+  	assertTrue("undef" = g.getLoggedInUsername());
+  	
+  	--test login
+  	assertTrue(not g.login("user1", "wrong password"));
+  	assertTrue(g.login("user1", "password1"));
+  	assertTrue("user1" = g.getLoggedInUsername());
+  	
+  	--test createRepository and other related gets
+  	assertTrue({} = g.getRepositories());
+  	g.createRepository(u1, "repName");
+  	rep := g.getSpecificOwnedRepository(u1, "repName");
+  	assertTrue({rep} = g.getUserAvailableRepositories(u1));
+  	assertTrue(rep = g.getSpecificAvailableRepository(u1, "repName"));
+  	assertTrue({"repName"}  = g.getAllAvailableRepositoriesName(u1));
+  	assertTrue(u1 = rep.getOwner());
+  	
+  	--test addCollaborator and other related gets
+  	g.addCollaborator(u1, "repName", u2);
+  	assertTrue({u2} = rep.getCollaborators());
+  	
+  	--test many get"repositories"
+  	assertTrue({"repName"}  = g.getAllAvailableRepositoriesName(u2));
+  	assertTrue({rep} = g.getUserAvailableRepositories(u2));
+  	assertTrue({"master"} = rep.getBranchesNames());
+  	assertTrue(rep.isPublicRepository());
+  	
+  	--test toggleVisibility
+  	rep.toggleVisibility(u1);
+  	assertTrue(not rep.isPublicRepository());
+  	rep.toggleVisibility(u1);
+  	assertTrue(rep.isPublicRepository());
+  	
+  	--test makeRepositoryPublic, makeRepositoryPrivate & getVisibility
+  	rep.makeRepositoryPrivate(u1);
+  	assertTrue(<Private> = rep.getVisibility());
+  	rep.makeRepositoryPublic(u1);
+  	assertTrue(<Public> = rep.getVisibility());
+  	
+  	--test makeRepositoryPublic & makeRepositoryPrivate
+  	g.makeRepositoryPrivate(u1, "repName");
+  	assertTrue(<Private> = rep.getVisibility());
+  	g.makeRepositoryPublic(u1, "repName");
+  	assertTrue(<Public> = rep.getVisibility());
+  	
+  	--test getClonableRepositories
+  	assertTrue({rep} = g.getClonableRepositories(u1));
+  	
+  	--test createBranch
+  	g.createBranch(u2, "repName", "branchName");
+  	assertTrue({"master", "branchName"} = rep.getBranchesNames());
+  	assertTrue({rep.getSpecificBranch("master"), rep.getSpecificBranch("branchName")} = rep.getBranches());
+  	b := rep.getSpecificBranch("branchName");
+  	assertTrue(rep = b.getRepository());
+  	assertTrue([] = b.getCommits());
+  	
+  	--test deleteBranch
+  	g.createBranch(u2, "repName", "deleteBranchTest");
+  	assertTrue("deleteBranchTest" in set rep.getBranchesNames());
+  	g.deleteBranch(u2, "repName", "deleteBranchTest");
+  	assertTrue("deleteBranchTest" not in set rep.getBranchesNames());
+  	
+  	--test createCommit
+  	g.createCommit(u2, "repName", "branchName", "1commitID", "commitMessage1");
+  	assertTrue(1 = len b.getCommits());
+  	c := b.getCommits()(1);
+  	assertTrue(u2 = c.getCommitter());
+  	assertTrue(b = c.getBranch());
+  	assertTrue("commitMessage1" = c.getMessage());
+  	g.createCommit(u1, "repName", "branchName", "2commitID", "commitMessage2");
+  	assertTrue(2 = len b.getCommits());
+  	
+  	--test mergeBranches
+  	g.createBranch(u1, "repName", "newBranchName");
+  	assertTrue("newBranchName" in set rep.getBranchesNames());
+  	g.createCommit(u1, "repName", "newBranchName", "3commitID", "commitMessage3");
+  	g.mergeBranches(u1, "repName", "branchName", "newBranchName");
+  	assertTrue("newBranchName" not in set rep.getBranchesNames());
+  	assertTrue(3 = len b.getCommits());
+  	
+  	--test removeCollaborator
+  	g.removeCollaborator(u1, "repName", u2);
+  	
+  	--test logout
+  	g.logout();
+  	assertTrue("undef" = g.getLoggedInUsername());
+  	
+  	--test delete user
+  	assertTrue(g.login("user2", "password2"));
+  	g.deleteUser("user2");
+  	
+  	--test deleteRepository
+  	assertTrue(g.login("user1", "password1"));
+  	g.deleteRepository(u1, "repName");
+  	assertTrue({} = g.getRepositories());
+  	assertTrue({} = g.getUserAvailableRepositories(u1));
+  );
+
+  public static main: () ==> ()
+  main() ==
+  (
+    new GithubTest().doTests();
+  );
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end GithubTest
