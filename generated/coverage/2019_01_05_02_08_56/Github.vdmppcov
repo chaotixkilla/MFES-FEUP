@@ -275,7 +275,6 @@ operations
 	pre {committer} inter users = {committer} -- criador do commit existe no sistema
 		and {getSpecificAvailableRepository(committer, repName)} inter getUserAvailableRepositories(committer) = {getSpecificAvailableRepository(committer, repName)}; -- o repositorio onde esta a ser criado o commit esta disponivel para o criador
 	
-	-- Delete an existant branch
 	public deleteBranch: User * String * String ==> ()
 	deleteBranch(user, repName, branchName) == (
 		dcl rep: Repository := getSpecificAvailableRepository(user, repName);
