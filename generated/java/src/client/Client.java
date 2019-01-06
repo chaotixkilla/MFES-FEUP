@@ -500,7 +500,7 @@ public class Client {
 			index = 1;
 			for(Iterator<String> i = availableRepositories.iterator(); i.hasNext();) {
 				String repName = i.next();
-				Repository rep = this.github.getSpecificOwnedRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+				Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
 				System.out.println("|| " + index + ". " + rep.getName() + " " + rep.getVisibility().toString());
 				
 				repMapping.put(index, rep.getName());
@@ -591,10 +591,10 @@ public class Client {
 				this.createBranchMenu(repName);
 				break;
 			case 3:
-				this.deleteBranchMenu(repName); /* TODO */
+				this.deleteBranchMenu(repName);
 				break;
 			case 4:
-				//this.mergeBranchMenu(repName); /* TODO */
+				this.mergeBranchMenu(repName);
 				break;
 			case 0:
 				this.collabRepositoriesMenu();
@@ -602,6 +602,92 @@ public class Client {
 			default:
 				System.out.println("Invalid input. Try again.");
 				break;
+		}
+	}
+	
+	private void mergeBranchMenu(String repName) {
+		Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+		HashMap<Integer, String> branchMapping = new HashMap<Integer, String>();
+		int index = 1;
+		int option1 = -1;
+		int option2 = -1;
+		
+		if(rep.getBranches().size() > 1) {
+			this.printGithubLogo();
+			System.out.println("||                                      ||");
+			System.out.println("|| Pick first branch to merge (this     ||");
+			System.out.println("|| branch will still exist after the    ||");
+			System.out.println("|| merge occurs):                       ||");
+			System.out.println("||                                      ||");
+			
+			for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+				Branch branch = i.next();
+				System.out.println("|| " + index + ". " + branch.getName());
+				
+				branchMapping.put(index, branch.getName());
+				index++;
+			}
+			
+			System.out.println("||                                      ||");
+			System.out.println("|| 0. Back.                             ||");
+			System.out.println("||                                      ||");
+			System.out.println("|| Choose an option.                    ||");
+			System.out.println("||                                      ||");
+			System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+			
+			while(option1 < 0 || option1 > index) {
+				String optionString = this.scanner.nextLine();
+				try {
+					option1 = Integer.parseInt(optionString);
+				} catch(NumberFormatException e) {
+					System.out.println("Invalid input. Try again.");
+				}
+			}
+			
+			this.printGithubLogo();
+			System.out.println("||                                      ||");
+			System.out.println("|| Pick second branch to merge (this    ||");
+			System.out.println("|| branch will be deleted after the     ||");
+			System.out.println("|| merge occurs):                       ||");
+			System.out.println("||                                      ||");
+			
+			index = 1;
+			for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+				Branch branch = i.next();
+				System.out.println("|| " + index + ". " + branch.getName());
+				
+				branchMapping.put(index, branch.getName());
+				index++;
+			}
+			
+			System.out.println("||                                      ||");
+			System.out.println("|| 0. Back.                             ||");
+			System.out.println("||                                      ||");
+			System.out.println("|| Choose an option.                    ||");
+			System.out.println("||                                      ||");
+			System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+			
+			while(option2 < 0 || option2 > index) {
+				String optionString = this.scanner.nextLine();
+				try {
+					option2 = Integer.parseInt(optionString);
+				} catch(NumberFormatException e) {
+					System.out.println("Invalid input. Try again.");
+				}
+			}
+			
+			if(option1 == 0 || option2 == 0) {
+				this.manageCollabRepositoryMenu(repName);
+			} else {
+				this.github.mergeBranches(this.github.getUser(this.github.getLoggedInUsername()), repName, branchMapping.get(option1), branchMapping.get(option2));
+				System.out.println("Branch " + branchMapping.get(option2) + " was successfully merged into branch " + branchMapping.get(option1) + "!");
+				this.manageCollabRepositoryMenu(repName);
+				//this.deleteBranchMenuConfirmation(repName, branchMapping.get(option));
+			}
+			
+		} else {
+			System.out.println("Not enough branches to merge in this repository!");
+			this.manageCollabRepositoryMenu(repName);
 		}
 	}
 	
