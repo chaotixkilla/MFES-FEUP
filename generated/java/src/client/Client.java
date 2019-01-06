@@ -35,7 +35,11 @@ public class Client {
 		this.github.addUser(user2);
 		this.github.addUser(user3);
 		
-		//System.out.println(this.github.toString());
+		this.github.createRepository(user1, "myFirstRepository");
+		this.github.createRepository(user2, "mySecondRepository");
+		
+		this.github.addCollaborator(user1, "myFirstRepository", user3);
+		
 	}
 	
 	//Menu printing
@@ -74,11 +78,9 @@ public class Client {
 				System.out.println("Program exited with success!");
 				break;
 			case 1: 
-				//System.out.println("login");
 				this.printLoginMenu();
 				break;
 			case 2:
-				//System.out.println("register");
 				this.printRegisterMenu();
 				break;
 			default:
@@ -100,8 +102,6 @@ public class Client {
 		password = this.scanner.nextLine();
 		System.out.println("||                                      ||");
 		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
-		
-		//System.out.println("logging with username " + username + " and password " + password);
 		
 		if(this.github.login(username, password)) {
 			System.out.println("Successful login!");
@@ -130,13 +130,11 @@ public class Client {
 		System.out.println("||                                      ||");
 		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
 		
-		//System.out.println(this.github.getUsers().toString());
 		User newUser = new User(username, email, password);
 		this.github.addUser(newUser);
 		
 		this.github.login(username, password);
 		this.printMainMenu();
-		//System.out.println(this.github.getUsers().toString());
 	}
 	
 	private void printMainMenu() {
@@ -197,7 +195,6 @@ public class Client {
 		
 		if(!this.github.getAllOwnedRepositoriesName(this.github.getUser(this.github.getLoggedInUsername())).contains(repName)) {
 			this.github.createRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
-			System.out.println(this.github.getAllAvailableRepositoriesName(this.github.getUser(this.github.getLoggedInUsername())));
 			System.out.println("Repository " + repName + " created!");
 			this.printMainMenu();
 		} else {
