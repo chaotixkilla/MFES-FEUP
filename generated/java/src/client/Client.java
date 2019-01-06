@@ -1,5 +1,6 @@
 package client;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Iterator;
@@ -294,7 +295,6 @@ public class Client {
 		}
 	}
 	
-	/* TODO */
 	private void manageOwnedRepositoryMenu(String repName) {
 		Repository rep = this.github.getSpecificOwnedRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
 		int option = -1;
@@ -535,11 +535,269 @@ public class Client {
 		}
 	}
 	
-	/* TODO */
 	private void manageCollabRepositoryMenu(String repName) {
 		Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+		int option = -1;
 		
+		this.printGithubLogo();
+		System.out.println("||                                      ||");
+		System.out.println("|| Repository \'" + repName + "\' Information");
+		System.out.println("||                                      ||");
 		
+		for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+			Branch branch = i.next();
+			System.out.println("||  " + branch.getName());
+			
+			if(branch.getCommits().size() > 0) {
+				for(Iterator<Commit> i1 = branch.getCommits().iterator(); i1.hasNext();) {
+					Commit commit = i1.next();
+					System.out.println("||   " + commit.getIdentifier() + " \'" + commit.getMessage() + "\'");
+				}
+			} else {
+				System.out.println("||   No commits done to this branch.    ||");
+			}
+			
+			System.out.println("||                                      ||");
+		}
+		
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		System.out.println("||                                      ||");
+		System.out.println("|| 1. Create new commit.                ||");
+		System.out.println("|| 2. Create new branch.                ||");
+		System.out.println("|| 3. Delete existent branch.           ||");
+		System.out.println("|| 4. Merge two existent branches.      ||");
+		System.out.println("||                                      ||");
+		System.out.println("|| 0. Back.                             ||");
+		System.out.println("||                                      ||");
+		System.out.println("|| Choose an option.                    ||");
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		
+		while(option < 0 || option > 4) {
+			String optionString = this.scanner.nextLine();
+			try {
+				option = Integer.parseInt(optionString);
+			} catch(NumberFormatException e) {
+				System.out.println("Invalid input. Try again.");
+			}
+		}
+		
+		switch(option) {
+			case 1:
+				this.pickBranchMenu(repName);
+				break;
+			case 2:
+				this.createBranchMenu(repName);
+				break;
+			case 3:
+				this.deleteBranchMenu(repName); /* TODO */
+				break;
+			case 4:
+				//this.mergeBranchMenu(repName); /* TODO */
+				break;
+			case 0:
+				this.collabRepositoriesMenu();
+				break;
+			default:
+				System.out.println("Invalid input. Try again.");
+				break;
+		}
+	}
+	
+	private void deleteBranchMenu(String repName) {
+		Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+		HashMap<Integer, String> branchMapping = new HashMap<Integer, String>();
+		int index = 1;
+		int option = -1;
+		
+		if(rep.getBranches().size() > 1) {
+			this.printGithubLogo();
+			System.out.println("||                                      ||");
+			System.out.println("|| Branches in this repository:         ||");
+			System.out.println("||                                      ||");
+			
+			for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+				Branch branch = i.next();
+				System.out.println("|| " + index + ". " + branch.getName());
+				
+				branchMapping.put(index, branch.getName());
+				index++;
+			}
+			
+			System.out.println("||                                      ||");
+			System.out.println("|| 0. Back.                             ||");
+			System.out.println("||                                      ||");
+			System.out.println("|| Choose an option.                    ||");
+			System.out.println("||                                      ||");
+			System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+			
+			while(option < 0 || option > index) {
+				String optionString = this.scanner.nextLine();
+				try {
+					option = Integer.parseInt(optionString);
+				} catch(NumberFormatException e) {
+					System.out.println("Invalid input. Try again.");
+				}
+			}
+			
+			if(option == 0) {
+				this.manageCollabRepositoryMenu(repName);
+			} else {
+				this.deleteBranchMenuConfirmation(repName, branchMapping.get(option));
+			}
+			
+		} else {
+			System.out.println("Cannot delete the last branch of a repository!");
+			this.manageCollabRepositoryMenu(repName);
+		}
+		
+	}
+	
+	private void deleteBranchMenuConfirmation(String repName, String branchName) {
+		int option = -1;
+		this.printGithubLogo();
+		System.out.println("||                                      ||");
+		System.out.println("|| Are you sure you want to delete      ||");
+		System.out.println("|| this branch? This operation is       ||");
+		System.out.println("|| permanent and all commits will be    ||");
+		System.out.println("|| lost!                                ||");
+		System.out.println("||                                      ||");
+		System.out.println("|| 1. YES                               ||");
+		System.out.println("|| 2. NO                                ||");
+		System.out.println("||                                      ||");
+		System.out.println("|| Choose an option.                    ||");
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		
+
+		while(option < 1 || option > 2) {
+			String optionString = this.scanner.nextLine();
+			try {
+				option = Integer.parseInt(optionString);
+			} catch(NumberFormatException e) {
+				System.out.println("Invalid input. Try again.");
+			}
+		}
+		
+		switch(option) {
+			case 1: 
+				this.github.deleteBranch(this.github.getUser(this.github.getLoggedInUsername()), repName, branchName);
+				System.out.println("Branch " + branchName + " was successfully deleted!");
+				this.manageCollabRepositoryMenu(repName);
+				break;
+			case 2:
+				this.manageCollabRepositoryMenu(repName);
+				break;
+			default:
+				System.out.println("Invalid input. Try again.");
+				break;
+		}
+	}
+	
+	private void createBranchMenu(String repName) {
+		Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+		String branchName = "";
+		
+		this.printGithubLogo();
+		System.out.println("||                                      ||");
+		System.out.println("|| Branches in this repository:         ||");
+		System.out.println("||                                      ||");
+		
+		for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+			Branch branch = i.next();
+			System.out.println("|| " + branch.getName());
+		}
+		
+		while(branchName.equals("") || rep.getBranchesNames().contains(branchName)) {
+			System.out.println("||                                      ||");
+			System.out.println("|| Insert a branch name                 ||");
+			System.out.print("||  ");
+			branchName = this.scanner.nextLine();
+			
+			if(branchName.equals("")) {
+				System.out.println("New branch must have a name!");
+			}
+			
+			if(rep.getBranchesNames().contains(branchName)) {
+				System.out.println("New branch must have a different name!");
+			}
+		}
+		
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		
+		this.github.createBranch(this.github.getUser(this.github.getLoggedInUsername()), repName, branchName);
+		this.manageCollabRepositoryMenu(repName);
+		
+	}
+	
+	private void pickBranchMenu(String repName) {
+		Repository rep = this.github.getSpecificAvailableRepository(this.github.getUser(this.github.getLoggedInUsername()), repName);
+		HashMap<Integer, String> branchMapper = new HashMap<Integer, String>();
+		int option = -1;
+		int index = 1;
+		
+		this.printGithubLogo();
+		System.out.println("||                                      ||");
+		System.out.println("|| Branches in this repository:         ||");
+		System.out.println("||                                      ||");
+		
+		for(Iterator<Branch> i = rep.getBranches().iterator(); i.hasNext();) {
+			Branch branch = i.next();
+			System.out.println("|| " + index + ". " + branch.getName());
+			
+			branchMapper.put(index, branch.getName());
+			index++;
+		}
+		
+		System.out.println("||                                      ||");
+		System.out.println("|| 0. Back.                             ||");
+		System.out.println("||                                      ||");
+		System.out.println("|| Choose an option.                    ||");
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		
+		while(option < 0 || option > index) {
+			String optionString = this.scanner.nextLine();
+			try {
+				option = Integer.parseInt(optionString);
+			} catch(NumberFormatException e) {
+				System.out.println("Invalid input. Try again.");
+			}
+		}
+		
+		if(option == 0) {
+			this.manageCollabRepositoryMenu(repName);
+		} else {
+			System.out.println("Branch " + branchMapper.get(option) + " selected for commit.");
+			this.createCommitMenu(repName, branchMapper.get(option));
+		}
+	}
+	
+	private void createCommitMenu(String repName, String branchName) {
+		String commitID, commitMessage;
+		
+		this.printGithubLogo();
+		System.out.println("||                                      ||");
+		System.out.println("|| Insert a commit message              ||");
+		System.out.print("||  ");
+		commitMessage = this.scanner.nextLine();
+		System.out.println("||                                      ||");
+		System.out.println("||||||||||||||||||||||||||||||||||||||||||");
+		
+		//UUID generator
+		final String AB = "0123456789abcdef";
+		SecureRandom rnd = new SecureRandom();
+		StringBuilder sb = new StringBuilder(6);
+	    for(int i = 0; i < 6; i++) {
+	    	sb.append(AB.charAt(rnd.nextInt(AB.length())));
+	    }
+	    commitID = sb.toString();
+	    
+	    this.github.createCommit(this.github.getUser(this.github.getLoggedInUsername()), repName, branchName, commitID, commitMessage);
+	    System.out.println("Commit " + commitID + " \'" + commitMessage + "\' successfully created!");
+	    this.manageCollabRepositoryMenu(repName);
 	}
 	
 	private void deleteUserMenu() {
