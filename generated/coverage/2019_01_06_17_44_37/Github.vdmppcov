@@ -304,8 +304,9 @@ operations
 		rep.mergeBranches(user, branch1, branch2);
 	)
 	pre {user} inter users = {user} -- user existe no sistema
+		and branchToMergeTo <> branchMerged -- os branches nao sao iguais
 		and {getSpecificAvailableRepository(user, repName)} inter getUserAvailableRepositories(user) = {getSpecificAvailableRepository(user, repName)}; -- o repositorio esta disponivel para o user
-	
+
 functions
 -- TODO Define functiones here
 

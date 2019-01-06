@@ -1,5 +1,4 @@
 package model;
-
 import java.util.*;
 import org.overture.codegen.runtime.*;
 
