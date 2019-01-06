@@ -1,0 +1,165 @@
+class Repository
+
+types
+-- TODO Define types here
+	public String = Utilities`String;
+	public RepositoryVisibility = Utilities`RepositoryVisibility;
+
+values
+-- TODO Define values here
+
+instance variables
+-- TODO Define instance variables here
+	private owner: User;
+	private name: String;
+	private collaborators: set of User := {};
+	private branches: set of Branch := {};
+	private visibility: RepositoryVisibility := <Public>;
+	
+	inv len name > 4 and len name < 25;
+	inv card branches > 0; -- existe sempre um branch no repositorio
+
+operations
+-- TODO Define operations here
+
+	-- Repository constructor
+	public Repository: User * String ==> Repository
+	Repository(user, repName) == (
+		owner := user;
+		name := repName;
+		branches := branches union {new Branch(self, "master")};
+		return self;
+	)
+	post collaborators = {} and visibility = <Public>;
+	
+	-- Get repository owner
+	public pure getOwner: () ==> User
+	getOwner() == (
+		return owner;
+	);
+	
+	-- Get repository name
+	public pure getName: () ==> String
+	getName() == (
+		return name;
+	);
+	
+	-- Get repository collaborators
+	public pure getCollaborators: () ==> set of User
+	getCollaborators() == (
+		return collaborators;
+	);
+	
+	-- Get repository branches
+	public pure getBranches: () ==> set of Branch
+	getBranches() == (
+		return branches;
+	);
+	
+	public pure getVisibility: () ==> RepositoryVisibility
+	getVisibility() == (
+		return visibility;
+	);
+	
+	public pure getSpecificBranch: String ==> Branch
+	getSpecificBranch(branchName) == (
+		for all b in set branches do
+			if b.getName() = branchName
+				then return b;
+		return new Branch();
+	)
+	pre branchName in set getBranchesNames();
+	
+	public pure getAllCommitsID: () ==> set of String
+	getAllCommitsID() == (
+		dcl IDs: set of String := {};
+		for all b in set branches do
+			for all c in set (elems b.getCommits()) do
+				IDs := IDs union {c.getIdentifier()};
+		return IDs;
+	);
+	
+	-- Get repository visibility
+	public pure isPublicRepository: () ==> bool
+	isPublicRepository() == (
+		return visibility = <Public>;
+	);
+	
+	public toggleVisibility: User ==> ()
+	toggleVisibility(user) == (
+		if visibility = <Public>
+			then visibility := <Private>
+		else visibility := <Public>
+	)
+	pre owner = user;
+	
+	public makeRepositoryPublic: User ==> ()
+	makeRepositoryPublic(user) == (
+		visibility := <Public>;
+	)
+	pre owner = user
+	post visibility = <Public>;
+	
+	public makeRepositoryPrivate: User ==> ()
+	makeRepositoryPrivate(user) == (
+		visibility := <Private>;
+	)
+	pre owner = user
+	post visibility = <Private>;
+	
+	public addCollaborator: User * User ==> ()
+	addCollaborator(user, newCollab) == (
+		collaborators := collaborators union {newCollab};
+	)
+	pre owner = user and {newCollab} inter collaborators = {};
+	
+	public removeCollaborator: User * User ==> ()
+	removeCollaborator(user, oldCollab) == (
+		collaborators := collaborators \ {oldCollab}
+	)
+	pre owner = user and {oldCollab} inter collaborators = {oldCollab}
+	post {oldCollab} inter collaborators = {};
+	
+	public pure getBranchesNames: () ==> set of String
+	getBranchesNames() == (
+		dcl names: set of String := {};
+		for all b in set branches do
+			names := names union {b.getName()};
+		return names;
+	);
+	
+	public addBranch: User * Branch ==> ()
+	addBranch(user, branch) == (
+		branches := branches union {branch};
+	)
+	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes
+		and {branch.getName()} inter getBranchesNames() = {}; -- nao ha branches repetidos
+
+	public deleteBranch: User * Branch ==> ()
+	deleteBranch(user, branch) == (
+		branches := branches \ {branch};
+	)
+	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes
+		and {branch} inter getBranches() = {branch} -- o branch existe
+	post {branch} inter getBranches() = {};
+	
+	public mergeBranches: User * Branch * Branch ==> ()
+	mergeBranches(user, branchToMergeTo, branchMerged) == (
+		deleteBranch(user, branchMerged);
+		for all c in set (elems branchMerged.getCommits()) do
+			(
+				branchToMergeTo.addCommit(user, c);
+				c.setBranch(branchToMergeTo);
+			)
+	)
+	pre (owner = user or collaborators inter {user} = {user})	-- user tem permissoes;
+		and {branchToMergeTo, branchMerged} inter getBranches() = {branchToMergeTo, branchMerged} -- os branches existe
+	post {branchToMergeTo, branchMerged} inter getBranches() = {branchToMergeTo}; -- o branch merged ja nao existe
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end Repository
